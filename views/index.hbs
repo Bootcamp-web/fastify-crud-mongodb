@@ -1,0 +1,22 @@
+<h1>{{title}}</h1>
+<div class = 'row' style="margin-top:50px">
+        {{#each list}}
+            {{#with this}}
+                <div class = "row-4">{{>ingredientes}}</div> 
+            {{/with}}
+        {{/each}}
+    
+</div>
+
+<a href="/list/add">Añadir</a>
+
+{{#if list.length}} 
+    <h2>Theres are {{list.length}} in the list</h2>
+   <div>
+       <h3>The most important is</h3>
+        <div class = "row-4">{{>ingredientes list.[0]}}</div>    
+   </div>
+   <h1>{{title}}</h1>
+    <h2>Añadir ingrediente</h2>
+    {{>add_ingredient}}
+{{/if}}
