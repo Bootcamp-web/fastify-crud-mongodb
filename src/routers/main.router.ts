@@ -1,6 +1,6 @@
 import { FastifyPluginAsync,  FastifyRequest, FastifyReply  } from "fastify"
 import { Ingrediente } from "../models/Ingrediente"
-import { Receta } from "../models/Receta"
+import { getIngredientes, Receta } from "../models/Receta"
 
 //import {list} from "./list.router"
 
@@ -15,8 +15,18 @@ const remove = async(request: Myrequest, reply: FastifyReply) => {
 }
 
 const home = async (request: FastifyRequest, reply: FastifyReply) => {
-    const list = await Receta.find().lean();
-    const data = { title: "Your Recipe list", list };
+    const recetas = await Receta.find().lean();
+   
+    let receta_con_ingredientes = [];
+    for (let receta of recetas) {
+        const ingredientes = await getIngredientes(receta._id);
+       
+        receta_con_ingredientes.push({
+            receta,
+            ingredientes
+        })
+    }
+    const data = { title: "Your Recipe list",recetas: receta_con_ingredientes };
     reply.view("views/index", data);
 }
 export const main_router:FastifyPluginAsync =async (app) => {

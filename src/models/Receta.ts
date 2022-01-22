@@ -1,4 +1,5 @@
 import  mongoose,{Schema, Document} from "mongoose"
+import { Ingrediente } from "./Ingrediente";
 
 
 export interface Receta extends Document{
@@ -19,6 +20,11 @@ const schema = new Schema(
     },{
         timestamps:true
 });
+
+export const getIngredientes = async (idReceta: string) => {
+    const ingredientes = await Ingrediente.find({ receta: idReceta }).lean();
+    return ingredientes
+};
 
 export const Receta = mongoose.model<Receta>("Receta", schema)
 

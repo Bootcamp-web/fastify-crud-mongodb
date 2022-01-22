@@ -2,7 +2,12 @@ import {FastifyPluginAsync, FastifyRequest, FastifyReply} from "fastify"
 
 import { Ingrediente} from "../models/Ingrediente";
 
-
+export type Ingredient = {
+    ingrediente: string;
+    cantidad: number;
+    id: number;
+    img: string
+}
 type MyRequest = FastifyRequest<{
     Body:{ingredient:string,cantidad:string}
 }>

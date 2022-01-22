@@ -385,3 +385,48 @@ export const Receta = mongoose.model<Receta>("Receta", schema)
     {{>add_ingredient}} --}}
 {{/if}}
 ~~~
+- 7º Función para poder traernos los ingredientes de la receta, modificamos `Receta.ts`
+~~~ts 
+export const getIngredientes = async (idReceta: string) => {
+    const ingredientes = await Ingrediente.find({ receta: idReceta }).lean();
+    return ingredientes
+};
+~~~
+
+- 8º Modificamos `main.routes.ts`
+~~~ts
+const home = async (request: FastifyRequest, reply: FastifyReply) => {
+    const recetas = await Receta.find().lean();
+    let receta_con_ingredientes = [];
+    for (let receta of recetas) {
+        const ingredientes = await getIngredientes(receta._id);
+        receta_con_ingredientes.push({
+            receta,
+            ingredientes
+        })
+    }
+    const data = { title: "Your Recipe list", receta_con_ingredientes };
+    reply.view("views/index", data);
+}
+~~~
+-9º Modificamos `index.hbs`
+
+~~~html
+<h1>{{title}}</h1>
+<div class = 'row' style="margin-top:50px">
+        {{#each recetas}}
+            {{#with this}}
+                <div class = "col-4">{{>receta}}</div> 
+            {{/with}}
+        {{/each}}
+    
+</div>
+
+
+{{#if recetas.length}} 
+    <h2>Theres are {{recetas.length}}  recepies in the list</h2>
+  
+   {{else}}
+    <img src="https://media0.giphy.com/media/l4EoMN9qjAOaaAcNO/200.webp?cid=ecf05e4792c60qrrbtrug3fcpokrb83bhjrf6p2jx0gw5e7h&rid=200.webp&ct=g" alt="Inactive">
+{{/if}}
+~~~

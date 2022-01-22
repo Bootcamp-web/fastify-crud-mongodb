@@ -1,8 +1,16 @@
 <div class="card" style="margin: 10px">
-
 	<div class="card-body">
-		<h5 class="card-title">{{nombre}}</h5>
-		<p class="card-text">Instrucciones: {{instrucciones}}</p>
-		{{!-- <a href="/remove?id={{_id}}" class="btn btn-primary">Delete recepie</a> --}}
+		<h5 class="card-title">{{receta.nombre}}</h5>
+		<p class="card-text">Instrucciones: {{receta.instrucciones}}</p>
+		<div class="row">
+			{{#each ingredientes}}
+			<div class="col">
+				{{>ingrediente}}
+			</div>
+			{{/each}}
+		</div>
+		<div style="margin-top: 50px;">
+			{{>add_ingredient receta}}
+		</div>
 	</div>
 </div>
