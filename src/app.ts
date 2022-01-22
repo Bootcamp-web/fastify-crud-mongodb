@@ -25,7 +25,8 @@ export const main_app: FastifyPluginAsync =async (app) => {
         layout: "./views/layouts/main.hbs",
         options:{
             partials:{
-                ingredientes:'/views/partials/ingrediente.hbs',
+                ingrediente:'/views/partials/ingrediente.hbs',
+                receta:'/views/partials/receta.hbs',
                 menu:'views/partials/menu.hbs',
                 add_ingredient:'views/partials/forms/add_ingredient.hbs'
             }

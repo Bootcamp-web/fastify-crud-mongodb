@@ -1,26 +1,26 @@
 import {FastifyPluginAsync, FastifyRequest, FastifyReply} from "fastify"
 
-import { Item } from "../models/item";
+import { Ingrediente} from "../models/Ingrediente";
 
 
 type MyRequest = FastifyRequest<{
-    Body:{ingredient:string,cantidad:number}
+    Body:{ingredient:string,cantidad:string}
 }>
 
 const add = (request: FastifyRequest, reply:FastifyReply)=>{
-    const data ={title: "Add items to your shopping list"}
+    const data ={title: "Add ingredient to your shopping list"}
     
     reply.view("views/add",data)
 }
 
 const deleteall = async (request: MyRequest, reply:FastifyReply)=>{
-    await Item.deleteMany();
+    await Ingrediente.deleteMany();
     reply.redirect("/")
 }
 
 const form = async (request: any, reply:any)=>{
     const { ingrediente, cantidad } = request.body;
-    const item = new Item({
+    const item = new Ingrediente({
         nombre:ingrediente,
         cantidad:cantidad,
         img:"ingredients.jpeg",

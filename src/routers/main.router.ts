@@ -1,5 +1,6 @@
 import { FastifyPluginAsync,  FastifyRequest, FastifyReply  } from "fastify"
-import { Item } from "../models/item"
+import { Ingrediente } from "../models/Ingrediente"
+import { Receta } from "../models/Receta"
 
 //import {list} from "./list.router"
 
@@ -8,14 +9,14 @@ type Myrequest = FastifyRequest<{
 }>
 const remove = async(request: Myrequest, reply: FastifyReply) => {
     const { id } = request.query
-    console.log(`Deleted item ${id}..`)
-    await Item.findByIdAndDelete(id)
+    console.log(`Deleted ingredient ${id}..`)
+    await Ingrediente.findByIdAndDelete(id)
     reply.redirect("/")
 }
 
 const home = async (request: FastifyRequest, reply: FastifyReply) => {
-    const list = await Item.find().lean();
-    const data = { title: "Your Shopping list", list };
+    const list = await Receta.find().lean();
+    const data = { title: "Your Recipe list", list };
     reply.view("views/index", data);
 }
 export const main_router:FastifyPluginAsync =async (app) => {
