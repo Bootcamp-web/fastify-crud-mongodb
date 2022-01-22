@@ -1,12 +1,18 @@
 import {FastifyPluginAsync} from "fastify"
 
+export type Ingredient = {
+    ingrediente: string;
+    cantidad: number;
+    img: string
+}
 
- 
-export let list= [
-    {ingrediente:"Papas", cantidad:3,id:0 },
-    {ingrediente:"Cebollas",cantidad:6,id:1},
-    {ingrediente:"Huevos",cantidad:6,id:2},
-]
+export let list: Array<Ingredient> = [
+    { ingrediente: "Patatas", cantidad: 3, img: "ingredients.jpeg" },
+    { ingrediente: "Cebollas", cantidad: 6,  img: "ingredients.jpeg" },
+    { ingrediente: "Huevos", cantidad: 5, img: "ingredients.jpeg" },
+];
+
+
 let cont = 3;
 const add = (request: any, reply:any)=>{
     const data ={title: "Add items to your shopping list"}
@@ -17,7 +23,7 @@ const add = (request: any, reply:any)=>{
 const form = (request: any, reply:any)=>{
     const { ingrediente, cantidad } = request.body;
    
-    const newItem = { ingrediente, cantidad,id:cont }
+    const newItem = { ingrediente, cantidad,id:cont,img: "ingredients.jpeg" }
     console.log(newItem)
     list.push(newItem)
     cont++

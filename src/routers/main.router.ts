@@ -1,9 +1,12 @@
-import { FastifyPluginAsync } from "fastify"
-import { isReturnStatement } from "typescript"
+import { FastifyPluginAsync,  FastifyRequest, FastifyReply  } from "fastify"
+import { Item } from "../models/item"
+
 import {list} from "./list.router"
 
-
-const remove = (request: any, reply: any) => {
+type Myrequest = FastifyRequest<{
+    Querystring: { id: string }
+}>
+const remove = (request: Myrequest, reply: FastifyReply) => {
     const { id } = request.query
     console.log(id)
     let index = list.map((e:any)=>{
@@ -13,7 +16,8 @@ const remove = (request: any, reply: any) => {
     reply.redirect("/")
 }
 
-const home = (request: any, reply: any) => {
+const home = async (request: FastifyRequest, reply: FastifyReply) => {
+    const list = await Item.find().lean();
     const data = { title: "Your Shopping list", list };
     reply.view("views/index", data);
 }
