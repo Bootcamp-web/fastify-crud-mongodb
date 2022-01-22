@@ -1,18 +1,15 @@
 import { FastifyPluginAsync,  FastifyRequest, FastifyReply  } from "fastify"
 import { Item } from "../models/item"
 
-import {list} from "./list.router"
+//import {list} from "./list.router"
 
 type Myrequest = FastifyRequest<{
     Querystring: { id: string }
 }>
-const remove = (request: Myrequest, reply: FastifyReply) => {
+const remove = async(request: Myrequest, reply: FastifyReply) => {
     const { id } = request.query
-    console.log(id)
-    let index = list.map((e:any)=>{
-        return e.id
-    }).indexOf(parseInt(id))
-    list.splice(index,1)
+    console.log(`Deleted item ${id}..`)
+    await Item.findByIdAndDelete(id)
     reply.redirect("/")
 }
 

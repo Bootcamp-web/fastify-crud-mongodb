@@ -173,7 +173,7 @@ await  mongoose.connect(DB_URL).then(()=>{
 import { PORT } from "./config";
 server.listen(PORT)
 ~~~
-- `main_routers.ts`
+- `main.routers.ts`
 ~~~ts
 import { FastifyPluginAsync,  FastifyRequest, FastifyReply  } from "fastify"
 import { Item } from "../models/item"
@@ -183,13 +183,10 @@ import {list} from "./list.router"
 type Myrequest = FastifyRequest<{
     Querystring: { id: string }
 }>
-const remove = (request: Myrequest, reply: FastifyReply) => {
+const remove = async(request: Myrequest, reply: FastifyReply) => {
     const { id } = request.query
-    console.log(id)
-    let index = list.map((e:any)=>{
-        return e.id
-    }).indexOf(parseInt(id))
-    list.splice(index,1)
+    console.log(`Deleted item ${id}..`)
+    await Item.findByIdAndDelete(id)
     reply.redirect("/")
 }
 
@@ -209,4 +206,61 @@ export const main_router:FastifyPluginAsync =async (app) => {
 ~~~
 ~~~html
 <a href="/remove?id={{_id}}" class="btn btn-primary">Delete ingredient</a>
+~~~
+- `list.router.ts`
+~~~ts
+import {FastifyPluginAsync, FastifyRequest, FastifyReply} from "fastify"
+import { Item } from "../models/item";
+
+
+const add = (request: FastifyRequest, reply:FastifyReply)=>{
+    const data ={title: "Add items to your shopping list"}
+    
+    reply.view("views/add",data)
+}
+
+const form = async (request: any, reply:any)=>{
+    const { ingrediente, cantidad } = request.body;
+    const item = new Item({
+        nombre:ingrediente,
+        cantidad:cantidad,
+        img:"ingrediente.jpg",
+
+    })
+    const doc = await item.save()
+    console.log(`Created item ${item.nombre} with id ${doc._id}`)
+    reply.redirect("/");
+
+}
+export  const list_router: FastifyPluginAsync  = async(app)=>{
+    app.post("/form",form)
+    app.get("/add",add)
+}
+~~~
+
+
+# 9 Añadimos ruta para borrar todos los elementos 
+- `menu.hbs`
+~~~html
+	<li class="nav-item">
+		<a class="nav-link" href="list/deleteall">Borrar todos</a>
+    </li>
+~~~
+- Creamos la función `deleteall`en `list.router.ts`
+~~~ts
+const deleteall = async (request: MyRequest, reply:FastifyReply)=>{
+    await Item.deleteMany();
+    reply.redirect("/")
+}
+
+export  const list_router: FastifyPluginAsync  = async(app)=>{
+    app.post("/form",form)
+    app.get("/add",add)
+    app.get("/deleteall",deleteall)
+}
+~~~
+
+~~~html
+ {{else}}
+   <img src="https://media0.giphy.com/media/l4EoMN9qjAOaaAcNO/200.webp?cid=ecf05e4792c60qrrbtrug3fcpokrb83bhjrf6p2jx0gw5e7h&rid=200.webp&ct=g" alt="Inactive">
 ~~~

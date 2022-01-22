@@ -1,36 +1,38 @@
-import {FastifyPluginAsync} from "fastify"
+import {FastifyPluginAsync, FastifyRequest, FastifyReply} from "fastify"
 
-export type Ingredient = {
-    ingrediente: string;
-    cantidad: number;
-    img: string
-}
-
-export let list: Array<Ingredient> = [
-    { ingrediente: "Patatas", cantidad: 3, img: "ingredients.jpeg" },
-    { ingrediente: "Cebollas", cantidad: 6,  img: "ingredients.jpeg" },
-    { ingrediente: "Huevos", cantidad: 5, img: "ingredients.jpeg" },
-];
+import { Item } from "../models/item";
 
 
-let cont = 3;
-const add = (request: any, reply:any)=>{
+type MyRequest = FastifyRequest<{
+    Body:{ingredient:string,cantidad:number}
+}>
+
+const add = (request: FastifyRequest, reply:FastifyReply)=>{
     const data ={title: "Add items to your shopping list"}
     
     reply.view("views/add",data)
 }
 
-const form = (request: any, reply:any)=>{
+const deleteall = async (request: MyRequest, reply:FastifyReply)=>{
+    await Item.deleteMany();
+    reply.redirect("/")
+}
+
+const form = async (request: any, reply:any)=>{
     const { ingrediente, cantidad } = request.body;
-   
-    const newItem = { ingrediente, cantidad,id:cont,img: "ingredients.jpeg" }
-    console.log(newItem)
-    list.push(newItem)
-    cont++
+    const item = new Item({
+        nombre:ingrediente,
+        cantidad:cantidad,
+        img:"ingredients.jpeg",
+
+    })
+    const doc = await item.save()
+    console.log(`Created item ${item.nombre} with id ${doc._id}`)
     reply.redirect("/");
 
 }
 export  const list_router: FastifyPluginAsync  = async(app)=>{
     app.post("/form",form)
     app.get("/add",add)
+    app.get("/deleteall",deleteall)
 }
