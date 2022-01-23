@@ -1,13 +1,17 @@
 # fastify-crud-mongodb
 1. [Arrancar npm](#schema1)
 2. [Instalar los paquetes necesarios ](#schema2)
-
-
-
-
-
-
-
+1. [Instalar dotenv y mongoose](#schema3)
+1. [Arrancamos mongo compas y conectar  a mongo](#schema4)
+1. [Creamos el archivo `config.ts`](#schema5)
+1. [Creamos el archivo `items.ts`](#schema6)
+1. [ Creamos el archivo `seed.ts`](#schema7)
+1. [Cambiamos los archivos para poder surtirnos de la bbdd y no del local](#schema8)
+1. [Añadimos ruta para borrar todos los elementos ](#schema9)
+1. [Recetario](#schema10)
+1. [Recetario v2](#schema11)
+1. [Borrar todas las recetas Recetas](#schema12)
+1. [Añadir  recetas](#schema13)
 
 
 <hr>
@@ -31,6 +35,10 @@ Parte del código viene del `fastify-crud`
 ~~~
 npm install 
 ~~~
+<hr>
+
+<a name="schema3"></a>
+
 # 3 Instalar dotenv y mongoose
 dotenv: variables de entorno
 mongoose: controlar mongodb
@@ -57,6 +65,9 @@ mongodb-compass
 mongodb://localhost:27017
 ~~~
 
+<a name="schema5"></a>
+<hr>
+
 # 5 Creamos el archivo `config.ts`
 Donde configuramos las variables de entorno
 ~~~ts
@@ -76,6 +87,10 @@ export const PORT: number = parseInt(checkEnv("PORT"));
 export const DB_URL: string = checkEnv("DB_URL");
 
 ~~~
+
+<a name="schema6"></a>
+<hr>
+
 
 # 6 Creamos el archivo `items.ts`
 Creamos el archivo `config.ts` dentro de la carpeta models, donde vamos a crear nuestros modelos/plantilla que van a tener que respetar todos los elementos que vayamos a meter dentro de la base de datos.
@@ -112,6 +127,8 @@ Con el `timestamps:true` va añadir un campo adicional a nuestros datos dentro d
         timestamps:true
     })
 ~~~
+<a name="schema7"></a>
+<hr>
 
 
 # 7 Creamos el archivo `seed.ts`
@@ -160,6 +177,11 @@ export let list: Array<Ingredient> = [
 })();
 
 ~~~
+
+
+<a name="schema8"></a>
+<hr>
+
 
 # 8 Cambiamos los archivos para poder surtirnos de la bbdd y no del local
 - Añadimos a `app.ts`
@@ -238,6 +260,8 @@ export  const list_router: FastifyPluginAsync  = async(app)=>{
 }
 ~~~
 
+<a name="schema9"></a>
+<hr>
 
 # 9 Añadimos ruta para borrar todos los elementos 
 - `menu.hbs`
@@ -264,6 +288,10 @@ export  const list_router: FastifyPluginAsync  = async(app)=>{
  {{else}}
    <img src="https://media0.giphy.com/media/l4EoMN9qjAOaaAcNO/200.webp?cid=ecf05e4792c60qrrbtrug3fcpokrb83bhjrf6p2jx0gw5e7h&rid=200.webp&ct=g" alt="Inactive">
 ~~~
+
+<a name="schema10"></a>
+<hr>
+
 
 # 10 Recetario
 - 1º  Creamos el modelo `Ingrediente.ts`
@@ -431,6 +459,10 @@ const home = async (request: FastifyRequest, reply: FastifyReply) => {
 {{/if}}
 ~~~
 
+<a name="schema11"></a>
+<hr>
+
+
 # 11 Recetario v2
 - Modificamos el archivo `seed.ts`
 ~~~ts
@@ -556,7 +588,8 @@ export  const list_router: FastifyPluginAsync  = async(app)=>{
     app.get("/deleteall",deleteall)
 }
 ~~~
-
+<a name="schema12"></a>
+<hr>
 
 # 12 Borrar todas las recetas Recetas
 - Modificamos `list.router.ts`
@@ -567,6 +600,9 @@ const deleteall = async (request: MyRequest, reply:FastifyReply)=>{
 }
 ~~~
 Borra todas las recetas.
+
+<a name="schema13"></a>
+<hr>
 
 # 13 Añadir  recetas
 - Creamos un `form` para añadir las recetas.
