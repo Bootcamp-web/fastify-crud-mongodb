@@ -430,3 +430,201 @@ const home = async (request: FastifyRequest, reply: FastifyReply) => {
     <img src="https://media0.giphy.com/media/l4EoMN9qjAOaaAcNO/200.webp?cid=ecf05e4792c60qrrbtrug3fcpokrb83bhjrf6p2jx0gw5e7h&rid=200.webp&ct=g" alt="Inactive">
 {{/if}}
 ~~~
+
+# 11 Recetario v2
+- Modificamos el archivo `seed.ts`
+~~~ts
+import  mongoose,{Schema, Document} from "mongoose"
+import { Ingrediente } from "./models/Ingrediente"
+import { DB_URL } from "./config"
+import { Receta } from "./models/Receta";
+
+const crearTortilla = async (version:string, ubicacion:[Number,Number])=>{
+    const receta = await Receta.create({
+        nombre:`Tortilla de papas con cebolla -${version}`, 
+        instrucciones:"Cortar, freir",
+        ubicacion:{
+            type:"Point",
+            coordenates: ubicacion
+        }
+    })
+ 
+    await Ingrediente.create({
+        nombre:"Patatas",
+        cantidad: "1kg",
+        receta:receta._id,
+        img:"ingredients.jpeg"
+    });
+     await Ingrediente.create({
+         nombre:"Huevos",
+         cantidad: "6",
+         receta:receta._id,
+         img:"ingredients.jpeg"
+     });
+     await Ingrediente.create({
+         nombre:"Cebollas",
+         cantidad: "2",
+         receta:receta._id,
+         img:"ingredients.jpeg"
+     });
+}
+
+
+(async()=>{
+    await mongoose.connect(DB_URL).then(() => console.log(`Conected to ${DB_URL}`))
+
+    try{
+        await Ingrediente.collection.drop();
+        await Receta.collection.drop();
+    }catch(error){
+        console.log("There are no items to drop from db")
+    }
+ 
+    
+    await crearTortilla("Madrid", [-3.70275, 40.41831]);
+    await crearTortilla("Valencia", [-0.37739, 39.46975]);
+
+    await mongoose.disconnect().then(()=>{
+        console.log("bye")
+    })
+
+
+    
+})();
+
+~~~
+- Modificamos el archivo `add_ingredient.hbs` para añadir ingredientes a la receta.
+El la línea `<form action = "/list/form_ingredient?receta_id={{_id}}" method="POST">` le pasamos al ingrediente el id de la receta al que está asociado.
+~~~html
+<form action = "/list/form?receta_id={{_id}}" method="POST">
+	<p>Ingrediente:</p>
+	<input name="nombre" />
+	<p>Cantidad</p>
+	<input name="cantidad" />
+	<p></p>
+	<button type="submit">ADD</button>
+</form>
+<a href="/">Back</a> 
+~~~
+
+- Modificamos `list.router.ts`
+~~~ts
+import {FastifyPluginAsync, FastifyRequest, FastifyReply} from "fastify"
+
+import { Ingrediente} from "../models/Ingrediente";
+
+export type Ingredient = {
+    ingrediente: string;
+    cantidad: number;
+    id: number;
+    img: string
+}
+type MyRequest = FastifyRequest<{
+    Body:{nombre:string,cantidad:string};
+    Querystring:{receta_id:string}
+}>
+
+const add = (request: FastifyRequest, reply:FastifyReply)=>{
+    const data ={title: "Add ingredient to your shopping list"}
+    
+    reply.view("views/add",data)
+}
+
+const deleteall = async (request: MyRequest, reply:FastifyReply)=>{
+    await Ingrediente.deleteMany();
+    reply.redirect("/")
+}
+
+const form = async (request: any, reply:any)=>{
+    const { nombre, cantidad } = request.body;
+    const {receta_id} = request.query;
+    const ingrediente = new Ingrediente({
+        nombre:nombre,
+        cantidad:cantidad,
+        img:"ingredients.jpeg",
+        receta:receta_id
+
+    })
+    const doc = await ingrediente.save()
+    console.log(`Created item ${ingrediente.nombre} with id ${doc._id}`)
+    reply.redirect("/");
+
+}
+export  const list_router: FastifyPluginAsync  = async(app)=>{
+    app.post("/form",form)
+    app.get("/add",add)
+    app.get("/deleteall",deleteall)
+}
+~~~
+
+
+# 12 Borrar todas las recetas Recetas
+- Modificamos `list.router.ts`
+~~~ts
+const deleteall = async (request: MyRequest, reply:FastifyReply)=>{
+    await Receta.deleteMany();
+    reply.redirect("/")
+}
+~~~
+Borra todas las recetas.
+
+# 13 Añadir  recetas
+- Creamos un `form` para añadir las recetas.
+~~~html
+<form action = "/list/form_recipe" method="POST">
+	<p>Recipe's name:</p>
+	<input name="recipe_name" />
+	<p>Instructios:</p>
+	<input name="recipe_instructions" />
+	<p></p>
+	<button type="submit">ADD</button>
+</form>
+<a href="/">Back</a> 
+~~~
+
+- Modificamos `add.hbs`
+~~~html
+<h1>{{title}}</h1>
+
+<div>{{>add_recipe}}</div>
+~~~
+- Modificamos `app.ts`
+Para añadirle el nuevo partials
+~~~ts
+ app.register(pointOfView, 
+    {
+        engine: {
+            handlebars: require("handlebars"),
+        },
+        layout: "./views/layouts/main.hbs",
+        options:{
+            partials:{
+                ingrediente:'/views/partials/ingrediente.hbs',
+                receta:'/views/partials/receta.hbs',
+                menu:'views/partials/menu.hbs',
+                add_ingredient:'views/partials/forms/add_ingredient.hbs',
+                add_recipe:'views/partials/forms/add_recipe.hbs'
+            }
+        }
+    });
+~~~
+
+- Modificamos `list.router.ts`
+Porque tenemos dos formularios.
+~~~ts
+const form_recipe = async (request: MyRequest, reply:FastifyReply)=>{
+    const { recipe_name, recipe_instructions } = request.body;
+    const receta = await Receta.create({
+        nombre:`${recipe_name}- Madrid`,
+        instrucciones:`${recipe_instructions}`,
+        ubicacion:{
+            type:"Point",
+            coordinates:[-3.70275, 40.41831]
+        }
+    })
+    const doc = await receta.save()
+    console.log(`Created recipe ${receta.nombre} with id ${doc._id}`)
+    reply.redirect("/");
+}
+
+~~~

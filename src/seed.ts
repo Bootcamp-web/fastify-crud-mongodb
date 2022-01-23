@@ -3,17 +3,36 @@ import { Ingrediente } from "./models/Ingrediente"
 import { DB_URL } from "./config"
 import { Receta } from "./models/Receta";
 
-export type Item= {
-    ingrediente: string;
-    cantidad: number;
-    img: string
+const crearTortilla = async (version:string, ubicacion:[Number,Number])=>{
+    const receta = await Receta.create({
+        nombre:`Tortilla de papas con cebolla -${version}`, 
+        instrucciones:"Cortar, freir",
+        ubicacion:{
+            type:"Point",
+            coordenates: ubicacion
+        }
+    })
+ 
+    await Ingrediente.create({
+        nombre:"Patatas",
+        cantidad: "1kg",
+        receta:receta._id,
+        img:"ingredients.jpeg"
+    });
+     await Ingrediente.create({
+         nombre:"Huevos",
+         cantidad: "6",
+         receta:receta._id,
+         img:"ingredients.jpeg"
+     });
+     await Ingrediente.create({
+         nombre:"Cebollas",
+         cantidad: "2",
+         receta:receta._id,
+         img:"ingredients.jpeg"
+     });
 }
 
-export let list: Array<Item> = [
-    { ingrediente: "Patatas", cantidad: 3, img: "ingredients.jpeg" },
-    { ingrediente: "Cebollas", cantidad: 6,  img: "ingredients.jpeg" },
-    { ingrediente: "Huevos", cantidad: 5, img: "ingredients.jpeg" },
-];
 
 (async()=>{
     await mongoose.connect(DB_URL).then(() => console.log(`Conected to ${DB_URL}`))
@@ -24,23 +43,11 @@ export let list: Array<Item> = [
     }catch(error){
         console.log("There are no items to drop from db")
     }
-   
-    const idReceta =  await Receta.create({
-        nombre:"Tortilla de papas con cebolla",
-        instrucciones:"Cortar, freir"
-    })
+ 
+    
+    await crearTortilla("Madrid", [-3.70275, 40.41831]);
+    await crearTortilla("Valencia", [-0.37739, 39.46975]);
 
-    for(let i = 0; i<list.length; i++){
-        const item = new Ingrediente ({
-            nombre:list[i].ingrediente,
-            cantidad:list[i].cantidad,
-            img:list[i].img,
-            receta: idReceta.id
-        })
-
-        const doc = await item.save()
-        console.log(`Created ingrediente ${item.nombre} with id ${doc._id}`)
-    }
     await mongoose.disconnect().then(()=>{
         console.log("bye")
     })

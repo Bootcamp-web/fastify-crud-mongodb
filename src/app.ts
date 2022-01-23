@@ -28,7 +28,8 @@ export const main_app: FastifyPluginAsync =async (app) => {
                 ingrediente:'/views/partials/ingrediente.hbs',
                 receta:'/views/partials/receta.hbs',
                 menu:'views/partials/menu.hbs',
-                add_ingredient:'views/partials/forms/add_ingredient.hbs'
+                add_ingredient:'views/partials/forms/add_ingredient.hbs',
+                add_recipe:'views/partials/forms/add_recipe.hbs'
             }
         }
     });

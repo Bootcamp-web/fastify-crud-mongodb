@@ -1,9 +1,9 @@
-<form action = "/list/form" method="POST">
-	<p>Ingrediente:</p>
-	<input name="ingrediente" />
-	<p>Cantidad</p>
+<form action = "/list/form_ingredient?receta_id={{_id}}" method="POST">
+	<p>Ingredient:</p>
+	<input name="nombre" />
+	<p>Amount:</p>
 	<input name="cantidad" />
 	<p></p>
-	<button type="submit">Añadir</button>
+	<button type="submit">ADD</button>
 </form>
 <a href="/">Back</a> 
